@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import WorkModal from "../components/WorkModal"
+import { works } from "@/lib/works"
 
 export default function Home() {
   const [dark, setDark] = useState(false)
@@ -181,31 +182,6 @@ export default function Home() {
 
   </div>
 </div>
-
-      {/* Work */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
-        <h2 className="text-3xl font-bold mb-12 text-center">
-          Work
-        </h2>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {works.map((work, i) => (
-            <div
-              key={i}
-              onClick={() => setSelectedWork(work)}
-              className="p-6 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg hover:scale-105 hover:shadow-2xl transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold mb-2">
-                {work.title}
-              </h3>
-              <p className="opacity-60">
-                {work.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <WorkModal
         work={selectedWork}
         onClose={() => setSelectedWork(null)}
