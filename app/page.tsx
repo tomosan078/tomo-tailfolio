@@ -136,11 +136,11 @@ export default function Home() {
         )}
 
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          Hi, I'm <span className="text-sky-500">Tomo</span>
+          Hi, I'm <span className="text-sky-500">tomosan078</span>
         </h1>
 
         <p className="text-lg md:text-xl opacity-70">
-          Frontend Developer / UI Enthusiast
+          Ordinary People / Server Moderator
         </p>
       </section>
 {/* ticker */}
