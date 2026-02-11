@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import WorkModal from "../components/WorkModal"
-import { works } from "@/lib/works"
+import { works } from "../lib/works"
 
 export default function Home() {
   const [dark, setDark] = useState(false)
