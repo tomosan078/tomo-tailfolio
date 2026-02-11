@@ -140,7 +140,7 @@ export default function Home() {
         </h1>
 
         <p className="text-lg md:text-xl opacity-70">
-          Ordinary People / Server Moderator
+          Students / Server Moderator
         </p>
       </section>
 {/* ticker */}
