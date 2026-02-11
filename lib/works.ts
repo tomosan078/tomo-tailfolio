@@ -1,4 +1,11 @@
-export const works = [
+export type Work = {
+  id: number
+  title: string
+  description: string
+  link: string
+}
+
+export const works: Work[] = [
   {
     id: 1,
     title: "Portfolio Site",
