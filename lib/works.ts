@@ -15,7 +15,7 @@ export const works: Work[] = [
   {
     id: 2,
     title: "Server Moderator",
-    description: "AGAMES Official Discord でモデレーターをしています。主に治安維持や、コミュニティでの援助、ルール整備等をしています。",
+    description: "AGAMES Official Discord Serverでモデレーターをしています。主に治安維持や、コミュニティでの援助、ルール整備等をしています。",
     link: "https://example.com"
   }
 ]
