@@ -1,23 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}"
+  ],
   theme: {
     extend: {
-      keyframes: {
-        floatY: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-50px)" },
-        },
-        floatY28: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-50px)" },
-        },
-      },
       animation: {
-        floatY: "floatY 20s ease-in-out infinite",
-        floatY28: "floatY28 28s ease-in-out infinite",
+        ticker: "ticker 25s linear infinite"
       },
-    },
+      keyframes: {
+        ticker: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" }
+        }
+      }
+    }
   },
-  plugins: [],
-};
+  plugins: []
+}
