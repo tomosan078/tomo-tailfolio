@@ -1,8 +1,8 @@
 import "./globals.css"
 
 export const metadata = {
-  title: "Tomo Portfolio",
-  description: "Modern Portfolio"
+  title: "tomosan078 Portfolio",
+  description: "Portfolio"
 }
 
 export default function RootLayout({
@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body>{children}</body>
     </html>
   )
