@@ -53,20 +53,7 @@ export default function Home() {
     discord?.discord_user?.id && discord?.discord_user?.avatar
       ? `https://cdn.discordapp.com/avatars/${discord.discord_user.id}/${discord.discord_user.avatar}.png?size=256`
       : null
-
-  const works = [
-    {
-      title: "Portfolio Site",
-      description: "Next.js + Tailwindで制作",
-      link: "https://example.com"
-    },
-    {
-      title: "UI Design",
-      description: "Figmaデザイン",
-      link: "https://example.com"
-    }
-  ]
-
+  
   return (
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors overflow-x-hidden">
 
