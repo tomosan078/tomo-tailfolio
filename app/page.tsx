@@ -91,6 +91,7 @@ export default function Home() {
       {/* ===== 詳細カード ===== */}
       {openDetail && discord && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl p-6 w-80 z-50">
+          
           <div className="flex items-center gap-4 mb-4">
             {avatarUrl && (
               <Image
@@ -110,36 +111,28 @@ export default function Home() {
               </div>
             </div>
           </div>
+
           {spotify && (
-  <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl p-4 flex items-center gap-4">
-    
-    {/* アルバム画像 */}
-    <Image
-      src={spotify.album_art_url}
-      alt="Album Art"
-      width={64}
-      height={64}
-      className="rounded-lg"
-    />
+            <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl p-4 flex items-center gap-4">
+              <Image
+                src={spotify.album_art_url}
+                alt="Album Art"
+                width={64}
+                height={64}
+                className="rounded-lg"
+              />
 
-    {/* 曲情報 */}
-    <div className="text-sm">
-      <div className="font-semibold">
-        {spotify.song}
-      </div>
+              <div className="text-sm">
+                <div className="font-semibold">{spotify.song}</div>
+                <div className="opacity-60 text-xs">{spotify.artist}</div>
+                <div className="opacity-40 text-xs">{spotify.album}</div>
+              </div>
+            </div>
+          )}
 
-      <div className="opacity-60 text-xs">
-        {spotify.artist}
-      </div>
-
-      <div className="opacity-40 text-xs">
-        {spotify.album}
-      </div>
-    </div>
-
-  </div>
-)}
-          
+        </div>
+      )}
+      
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-32">
         {avatarUrl && (
