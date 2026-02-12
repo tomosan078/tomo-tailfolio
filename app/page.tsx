@@ -24,21 +24,18 @@ export default function Home() {
   // ===== Lanyard Socket =====
   useEffect(() => {
     const socket = new WebSocket("wss://api.lanyard.rest/socket")
-
     socket.onopen = () => {
       socket.send(JSON.stringify({
         op: 2,
         d: { subscribe_to_id: discordId }
       }))
     }
-
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       if ((data.t === "INIT_STATE" || data.t === "PRESENCE_UPDATE") && data.d?.discord_user) {
         setDiscord(data.d)
       }
     }
-
     return () => socket.close()
   }, [])
 
@@ -54,13 +51,12 @@ export default function Home() {
   // ===== Progress Timer =====
   useEffect(() => {
     if (!spotify?.timestamps?.start) return
-
     const interval = setInterval(() => {
       const now = Date.now()
-      const elapsed = Math.floor((now - spotify.timestamps.start) / 1000)
+      let elapsed = Math.floor((now - spotify.timestamps.start) / 1000)
+      elapsed = Math.min(elapsed, duration) // 曲を超えない
       setProgress(elapsed)
     }, 500)
-
     return () => clearInterval(interval)
   }, [spotify])
 
@@ -79,7 +75,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors overflow-x-hidden">
 
-      {/* Toggle */}
+      {/* Dark Toggle */}
       <button
         onClick={() => setDark(!dark)}
         className="fixed top-4 right-4 z-50 px-4 py-2 rounded-full text-sm font-medium bg-black text-white dark:bg-white dark:text-black"
@@ -106,6 +102,7 @@ export default function Home() {
       {openDetail && discord && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl p-6 w-80 z-50">
 
+          {/* Avatar */}
           <div className="flex items-center gap-4 mb-4">
             {avatarUrl && (
               <Image src={avatarUrl} alt="" width={64} height={64} className="rounded-full"/>
@@ -116,137 +113,125 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ===== Spotify (Ultra Card) ===== */}
-          <AnimatePresence mode="wait">
+          {/* Spotify */}
           {spotify && (
-          <motion.div
-            key={spotify.song}
-            initial={{opacity:0,scale:0.95}}
-            animate={{opacity:1,scale:1}}
-            exit={{opacity:0,scale:0.95}}
-            transition={{duration:0.35}}
-            className="relative rounded-xl overflow-hidden"
-          >
-
-            {/* Blur BG */}
-            <div className="absolute inset-0">
-              <Image
-                src={spotify.album_art_url}
-                alt=""
-                fill
-                className="object-cover blur-2xl scale-125 opacity-40"
-              />
-              <div className="absolute inset-0 bg-white/60 dark:bg-black/60"/>
-            </div>
-
-            {/* Content */}
-            <div className="relative p-4 flex gap-4 items-center">
-
-              <Image
-                src={spotify.album_art_url}
-                alt=""
-                width={72}
-                height={72}
-                className="rounded-lg shadow-xl"
-              />
-
-              <div className="flex-1">
-
-                <div className="font-semibold text-sm">
-                  {spotify.song}
-                </div>
-
-                <div className="text-xs opacity-70">
-                  {spotify.artist}
-                </div>
-
-                {/* Progress */}
-                <div className="mt-3">
-                  <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-green-500 transition-all duration-500"
-                      style={{ width:`${duration ? (progress/duration)*100 : 0}%` }}
-                    />
-                  </div>
-
-                  <div className="flex justify-between text-[10px] opacity-60 mt-1">
-                    <span>{format(progress)}</span>
-                    <span>{format(duration)}</span>
-                  </div>
-                </div>
-
-                {/* Visualizer */}
-                <div className="flex gap-[3px] mt-3 h-4 items-end">
-                  {[...Array(16)].map((_,i)=>(
-                    <div
-                      key={i}
-                      className="w-[3px] bg-green-500 animate-pulse"
-                      style={{
-                        height:`${8 + Math.sin(progress*2+i)*6}px`,
-                        animationDelay:`${i*0.1}s`
-                      }}
-                    />
-                  ))}
-                </div>
-
+            <motion.div
+              key={spotify.song}
+              initial={{opacity:0,scale:0.95}}
+              animate={{opacity:1,scale:1}}
+              exit={{opacity:0,scale:0.95}}
+              transition={{duration:0.35}}
+              className="relative rounded-xl overflow-hidden"
+            >
+              {/* Blur BG */}
+              <div className="absolute inset-0">
+                <Image src={spotify.album_art_url} alt="" fill className="object-cover blur-2xl scale-125 opacity-40"/>
+                <div className="absolute inset-0 bg-white/60 dark:bg-black/60"/>
               </div>
-            </div>
 
-          </motion.div>
+              {/* Content */}
+              <div className="relative p-4 flex gap-4 items-center">
+                <Image src={spotify.album_art_url} alt="" width={72} height={72} className="rounded-lg shadow-xl"/>
+                <div className="flex-1">
+                  <div className="font-semibold text-sm">{spotify.song}</div>
+                  <div className="text-xs opacity-70">{spotify.artist}</div>
+
+                  {/* Progress */}
+                  <div className="mt-3">
+                    <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-500 transition-all duration-500"
+                        style={{ width:`${duration ? (progress/duration)*100 : 0}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[10px] opacity-60 mt-1">
+                      <span>{format(progress)}</span>
+                      <span>{format(duration)}</span>
+                    </div>
+                  </div>
+
+                  {/* Visualizer */}
+                  <div className="flex gap-[3px] mt-3 h-4 items-end">
+                    {[...Array(16)].map((_,i)=>(
+                      <div
+                        key={i}
+                        className="w-[3px] bg-green-500 animate-pulse"
+                        style={{
+                          height:`${8 + Math.sin(progress*2+i)*6}px`,
+                          animationDelay:`${i*0.1}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           )}
-          </AnimatePresence>
-
         </div>
       )}
 
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-32">
         {avatarUrl && (
-          <Image src={avatarUrl} alt="" width={140} height={140}
-            className="rounded-full border-4 border-sky-400 shadow-xl mb-6"/>
+          <Image src={avatarUrl} alt="" width={140} height={140} className="rounded-full border-4 border-sky-400 shadow-xl mb-6"/>
         )}
-
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Hi, I'm <span className="text-sky-500">tomosan078</span>
         </h1>
-
-        <p className="text-lg opacity-70">
-          Students / Server Moderator
-        </p>
+        <p className="text-lg opacity-70">Students / Server Moderator</p>
       </section>
 
-      {/* Work */}
+{/* Ticker */}
+      <div className="w-full overflow-hidden border-y border-zinc-200 dark:border-zinc-800 mt-24">
+        <motion.div
+          className="flex w-max"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+        >
+          {[0,1].map(i=>(
+            <div key={i} className="flex whitespace-nowrap py-3 text-sm font-medium">
+              <span className="mx-8">
+                ● STATUS: {status.toUpperCase()} ● DISCORD CONNECTED ● NEXT.JS ● TAILWIND ● PORTFOLIO ● UI DESIGN ● FRONTEND ●
+              </span>
+              <span className="mx-8">
+                ● STATUS: {status.toUpperCase()} ● DISCORD CONNECTED ● NEXT.JS ● TAILWIND ● PORTFOLIO ● UI DESIGN ● FRONTEND ●
+              </span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Work Section */}
       <section className="max-w-5xl mx-auto px-6 py-20">
         <h2 className="text-3xl font-bold mb-12 text-center">Work</h2>
         <div className="grid md:grid-cols-2 gap-8">
-          {works.map((work:any)=>(
-            <div key={work.id}
-              onClick={()=>setSelectedWork(work)}
-              className="p-6 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg hover:scale-105 transition cursor-pointer">
-              <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
-              <p className="opacity-60">{work.description}</p>
-            </div>
-          ))}
+          <AnimatePresence>
+            {works.map((work:any)=>(
+              <motion.div
+                key={work.id}
+                onClick={()=>setSelectedWork(work)}
+                initial={{opacity:0, y:20}}
+                animate={{opacity:1, y:0}}
+                exit={{opacity:0, y:20}}
+                transition={{type:"spring", stiffness:120, damping:15}}
+                className="p-6 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg hover:scale-105 transition cursor-pointer"
+              >
+                <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
+                <p className="opacity-60">{work.description}</p>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </section>
 
       <WorkModal work={selectedWork} onClose={()=>setSelectedWork(null)}/>
 
-{/* ===== Footer ===== */}
-<footer className="text-center text-xs opacity-50 py-10">
-  <p>
-    Spotify® and album artwork are property of their respective owners.
-  </p>
-
-  <p>
-    This site is not affiliated with, endorsed by, or sponsored by Spotify.
-  </p>
-
-  <p>
-    Presence data and status data are provided via Discord / Lanyard API.
-  </p>
-</footer>
-      
+      {/* Footer */}
+      <footer className="text-center text-xs opacity-50 py-10">
+        <p>Spotify® and album artwork are property of their respective owners.</p>
+        <p>This site is not affiliated with, endorsed by, or sponsored by Spotify.</p>
+        <p>Presence data and status data are provided via Discord / Lanyard API.</p>
+      </footer>
     </main>
   )
 }
