@@ -243,7 +243,7 @@ export default function Home() {
   </p>
 
   <p>
-    Presence data provided via Discord / Lanyard API.
+    Presence data and status data are provided via Discord / Lanyard API.
   </p>
 </footer>
       
