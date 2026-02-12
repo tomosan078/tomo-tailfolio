@@ -110,19 +110,36 @@ export default function Home() {
               </div>
             </div>
           </div>
-
           {spotify && (
-            <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl p-4 text-sm">
-              <div className="font-semibold mb-1">Now Playing</div>
-              <div>{spotify.song}</div>
-              <div className="opacity-60 text-xs">
-                {spotify.artist}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+  <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl p-4 flex items-center gap-4">
+    
+    {/* アルバム画像 */}
+    <Image
+      src={spotify.album_art_url}
+      alt="Album Art"
+      width={64}
+      height={64}
+      className="rounded-lg"
+    />
 
+    {/* 曲情報 */}
+    <div className="text-sm">
+      <div className="font-semibold">
+        {spotify.song}
+      </div>
+
+      <div className="opacity-60 text-xs">
+        {spotify.artist}
+      </div>
+
+      <div className="opacity-40 text-xs">
+        {spotify.album}
+      </div>
+    </div>
+
+  </div>
+)}
+          
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-32">
         {avatarUrl && (
