@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import WorkModal from "../components/WorkModal"
 import { works } from "../lib/works"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function Home() {
   const [dark, setDark] = useState(false)
@@ -20,7 +21,7 @@ export default function Home() {
     dark ? html.classList.add("dark") : html.classList.remove("dark")
   }, [dark])
 
-  // ===== Discord Lanyard Socket =====
+  // ===== Lanyard Socket =====
   useEffect(() => {
     const socket = new WebSocket("wss://api.lanyard.rest/socket")
 
@@ -44,7 +45,13 @@ export default function Home() {
   const status = discord?.discord_status ?? "offline"
   const spotify = discord?.spotify
 
-  // ===== Spotify Progress =====
+  // duration 安全計算
+  const duration =
+    spotify?.timestamps
+      ? Math.floor((spotify.timestamps.end - spotify.timestamps.start) / 1000)
+      : 0
+
+  // ===== Progress Timer =====
   useEffect(() => {
     if (!spotify?.timestamps?.start) return
 
@@ -58,12 +65,12 @@ export default function Home() {
   }, [spotify])
 
   const format = (sec:number) => {
+    if (!sec) return "0:00"
     const m = Math.floor(sec / 60)
     const s = sec % 60
     return `${m}:${s.toString().padStart(2,"0")}`
   }
 
-  // ===== Avatar =====
   const avatarUrl =
     discord?.discord_user?.id && discord?.discord_user?.avatar
       ? `https://cdn.discordapp.com/avatars/${discord.discord_user.id}/${discord.discord_user.avatar}.png?size=256`
@@ -72,72 +79,75 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors overflow-x-hidden">
 
-      {/* Dark Toggle */}
+      {/* Toggle */}
       <button
         onClick={() => setDark(!dark)}
-        className="fixed top-4 right-4 z-50 px-4 py-2 rounded-full text-sm font-medium bg-black text-white dark:bg-white dark:text-black transition"
+        className="fixed top-4 right-4 z-50 px-4 py-2 rounded-full text-sm font-medium bg-black text-white dark:bg-white dark:text-black"
       >
         {dark ? "☀ Light" : "🌙 Dark"}
       </button>
 
-      {/* ===== Online Bar ===== */}
+      {/* Online Bar */}
       <div className="fixed top-0 left-0 w-full z-40 flex justify-center pt-4">
         <div
           onClick={() => setOpenDetail(!openDetail)}
-          className="cursor-pointer flex items-center gap-3 px-6 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 shadow-lg backdrop-blur transition hover:scale-105"
+          className="cursor-pointer flex items-center gap-3 px-6 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 shadow-lg backdrop-blur hover:scale-105 transition"
         >
-          <span
-            className={`w-3 h-3 rounded-full animate-pulse ${
-              status === "online"
-                ? "bg-green-500"
-                : status === "idle"
-                ? "bg-yellow-400"
-                : status === "dnd"
-                ? "bg-red-500"
-                : "bg-gray-400"
-            }`}
-          />
-          <span className="text-sm font-medium capitalize">
-            {status}
-          </span>
+          <span className={`w-3 h-3 rounded-full animate-pulse ${
+            status==="online"?"bg-green-500":
+            status==="idle"?"bg-yellow-400":
+            status==="dnd"?"bg-red-500":"bg-gray-400"
+          }`}/>
+          <span className="text-sm font-medium capitalize">{status}</span>
         </div>
       </div>
 
-      {/* ===== Detail Card ===== */}
+      {/* Detail Card */}
       {openDetail && discord && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl p-6 w-80 z-50">
 
-          {/* Avatar */}
           <div className="flex items-center gap-4 mb-4">
             {avatarUrl && (
-              <Image
-                src={avatarUrl}
-                alt="Discord Avatar"
-                width={64}
-                height={64}
-                className="rounded-full"
-              />
+              <Image src={avatarUrl} alt="" width={64} height={64} className="rounded-full"/>
             )}
             <div>
-              <div className="font-semibold">
-                {discord.discord_user?.username}
-              </div>
-              <div className="text-sm opacity-60 capitalize">
-                {status}
-              </div>
+              <div className="font-semibold">{discord.discord_user?.username}</div>
+              <div className="text-sm opacity-60 capitalize">{status}</div>
             </div>
           </div>
 
-          {/* Spotify */}
+          {/* ===== Spotify (Ultra Card) ===== */}
+          <AnimatePresence mode="wait">
           {spotify && (
-            <div className="bg-zinc-100 dark:bg-zinc-800 rounded-xl p-4 flex gap-4 items-center">
+          <motion.div
+            key={spotify.song}
+            initial={{opacity:0,scale:0.95}}
+            animate={{opacity:1,scale:1}}
+            exit={{opacity:0,scale:0.95}}
+            transition={{duration:0.35}}
+            className="relative rounded-xl overflow-hidden"
+          >
+
+            {/* Blur BG */}
+            <div className="absolute inset-0">
+              <Image
+                src={spotify.album_art_url}
+                alt=""
+                fill
+                className="object-cover blur-2xl scale-125 opacity-40"
+              />
+              <div className="absolute inset-0 bg-white/60 dark:bg-black/60"/>
+            </div>
+
+            {/* Content */}
+            <div className="relative p-4 flex gap-4 items-center">
 
               <Image
                 src={spotify.album_art_url}
-                alt="Album Art"
+                alt=""
                 width={72}
                 height={72}
-                className="rounded-lg shadow-lg"
+                className="rounded-lg shadow-xl"
               />
 
               <div className="flex-1">
@@ -146,7 +156,7 @@ export default function Home() {
                   {spotify.song}
                 </div>
 
-                <div className="text-xs opacity-60">
+                <div className="text-xs opacity-70">
                   {spotify.artist}
                 </div>
 
@@ -154,16 +164,14 @@ export default function Home() {
                 <div className="mt-3">
                   <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-green-500 transition-all duration-500 ease-linear"
-                      style={{
-                        width:`${(progress/(spotify.duration/1000))*100}%`
-                      }}
+                      className="h-full bg-green-500 transition-all duration-500"
+                      style={{ width:`${duration ? (progress/duration)*100 : 0}%` }}
                     />
                   </div>
 
-                  <div className="flex justify-between text-[10px] opacity-50 mt-1">
+                  <div className="flex justify-between text-[10px] opacity-60 mt-1">
                     <span>{format(progress)}</span>
-                    <span>{format(Math.floor(spotify.duration/1000))}</span>
+                    <span>{format(duration)}</span>
                   </div>
                 </div>
 
@@ -183,76 +191,46 @@ export default function Home() {
 
               </div>
             </div>
+
+          </motion.div>
           )}
+          </AnimatePresence>
 
         </div>
       )}
 
-      {/* ===== Hero ===== */}
+      {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-32">
         {avatarUrl && (
-          <Image
-            src={avatarUrl}
-            alt="Avatar"
-            width={140}
-            height={140}
-            className="rounded-full border-4 border-sky-400 shadow-xl mb-6 hover:scale-105 transition"
-          />
+          <Image src={avatarUrl} alt="" width={140} height={140}
+            className="rounded-full border-4 border-sky-400 shadow-xl mb-6"/>
         )}
 
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Hi, I'm <span className="text-sky-500">tomosan078</span>
         </h1>
 
-        <p className="text-lg md:text-xl opacity-70">
+        <p className="text-lg opacity-70">
           Students / Server Moderator
         </p>
       </section>
 
-      {/* ===== Ticker ===== */}
-      <div className="w-full overflow-hidden border-y border-zinc-200 dark:border-zinc-800 mt-24">
-        <div className="flex animate-ticker w-max">
-
-          {[0,1].map(i=>(
-            <div key={i} className="flex whitespace-nowrap py-3 text-sm font-medium">
-              <span className="mx-8">
-                ● STATUS: {status.toUpperCase()} ● DISCORD CONNECTED ● NEXT.JS ● TAILWIND ● PORTFOLIO ● UI DESIGN ● FRONTEND ●
-              </span>
-              <span className="mx-8">
-                ● STATUS: {status.toUpperCase()} ● DISCORD CONNECTED ● NEXT.JS ● TAILWIND ● PORTFOLIO ● UI DESIGN ● FRONTEND ●
-              </span>
-            </div>
-          ))}
-
-        </div>
-      </div>
-
-      {/* ===== Work ===== */}
+      {/* Work */}
       <section className="max-w-5xl mx-auto px-6 py-20">
         <h2 className="text-3xl font-bold mb-12 text-center">Work</h2>
-
         <div className="grid md:grid-cols-2 gap-8">
-          {works.map((work:any) => (
-            <div
-              key={work.id}
-              onClick={() => setSelectedWork(work)}
-              className="p-6 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg hover:scale-105 hover:shadow-2xl transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold mb-2">
-                {work.title}
-              </h3>
-              <p className="opacity-60">
-                {work.description}
-              </p>
+          {works.map((work:any)=>(
+            <div key={work.id}
+              onClick={()=>setSelectedWork(work)}
+              className="p-6 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg hover:scale-105 transition cursor-pointer">
+              <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
+              <p className="opacity-60">{work.description}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <WorkModal
-        work={selectedWork}
-        onClose={() => setSelectedWork(null)}
-      />
+      <WorkModal work={selectedWork} onClose={()=>setSelectedWork(null)}/>
 
     </main>
   )
