@@ -233,21 +233,18 @@ export default function Home() {
       <WorkModal work={selectedWork} onClose={()=>setSelectedWork(null)}/>
 
 {/* ===== Footer ===== */}
-<footer className="mt-24 border-t border-zinc-200 dark:border-zinc-800 py-12 text-center">
+<footer className="text-center text-xs opacity-50 py-10">
+  <p>
+    Spotify® and album artwork are property of their respective owners.
+  </p>
 
-  <div className="font-medium mb-3">
-    Built with Next.js + Tailwind
-  </div>
+  <p>
+    This site is not affiliated with, endorsed by, or sponsored by Spotify.
+  </p>
 
-  <div className="text-sm opacity-70">
-    © {new Date().getFullYear()} tomosan078
-  </div>
-
-  <div className="text-xs opacity-50 mt-2">
-    Album artwork © respective owners
-Displayed via Spotify presence data.
-  </div>
-
+  <p>
+    Presence data provided via Discord / Lanyard API.
+  </p>
 </footer>
       
     </main>
