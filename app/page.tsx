@@ -52,7 +52,7 @@ export default function Home() {
   const avatarUrl =
     discord?.discord_user?.id && discord?.discord_user?.avatar
       ? `https://cdn.discordapp.com/avatars/${discord.discord_user.id}/${discord.discord_user.avatar}.png?size=256`
-      : null
+      : null;
   
   return (
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors overflow-x-hidden">
