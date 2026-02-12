@@ -245,6 +245,7 @@ export default function Home() {
 
   <div className="text-xs opacity-50 mt-2">
     Album artwork © respective owners
+Displayed via Spotify presence data.
   </div>
 
 </footer>
