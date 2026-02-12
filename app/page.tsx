@@ -232,6 +232,23 @@ export default function Home() {
 
       <WorkModal work={selectedWork} onClose={()=>setSelectedWork(null)}/>
 
+{/* ===== Footer ===== */}
+<footer className="mt-24 border-t border-zinc-200 dark:border-zinc-800 py-12 text-center">
+
+  <div className="font-medium mb-3">
+    Built with Next.js + Tailwind
+  </div>
+
+  <div className="text-sm opacity-70">
+    © {new Date().getFullYear()} tomosan078
+  </div>
+
+  <div className="text-xs opacity-50 mt-2">
+    Album artwork © respective owners
+  </div>
+
+</footer>
+      
     </main>
   )
 }
